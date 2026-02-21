@@ -7,7 +7,7 @@ from streamlit_gsheets import GSheetsConnection
 # --- ページ設定 ---
 st.set_page_config(page_title="スペシャルガチャ", page_icon="🎁", layout="centered")
 
-# --- CSSでデザイン修正（スマホ中央揃え・完全対応版） ---
+# --- CSSでデザイン修正（スマホ中央揃え・超安定版） ---
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(to bottom, #f3f4f6, #e5e7eb); }
@@ -30,17 +30,8 @@ st.markdown("""
     p, div { color: #374151; font-family: sans-serif; }
     img { border-radius: 10px; max-height: 300px; object-fit: contain; }
     
-    /* ▼▼▼ ボタンを「絶対に」中央揃えにする魔法 ▼▼▼ */
-    .stButton {
-        display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-    }
+    /* ボタンは配置の魔法を消し、色と形だけを指定 */
     .stButton > button {
-        width: 80% !important;
-        max-width: 300px !important;
-        margin: 0 auto !important; /* 左右の余白を自動調整してど真ん中へ */
-        display: block !important;
         background-color: #ef4444;
         color: white;
         font-weight: bold;
@@ -59,7 +50,7 @@ st.markdown("""
 # --- スプレッドシート接続 ---
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# --- データの読み込み（ttl=0 で常に最新データを取得） ---
+# --- データの読み込み ---
 try:
     df_items = conn.read(worksheet="settings", ttl=0)
 except Exception as e:
@@ -92,24 +83,26 @@ if 'is_registered' not in st.session_state:
 #  画面1: スタート画面
 # ==========================================
 if st.session_state.page_state == 'start':
-    # タイトルの絵文字の配置を調整し、スマホで綺麗に2行になるようにしました
     st.markdown("<h1>🎁 Laf2周年 🎁<br>スペシャルガチャ</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; margin-bottom: 20px;'>何が出るかな？運試し！</p>", unsafe_allow_html=True)
 
+    # 左右に余白(1)、真ん中を広く(2)の比率で画面を分割
     col1, col2, col3 = st.columns([1, 2, 1])
+    
+    # 画像もボタンも、真ん中の枠(col2)の中にまとめる！
     with col2:
         try:
             st.image("images/gacha_body.jpg", use_container_width=True)
         except:
              st.info("gacha_body.jpg がありません")
 
-    st.write("") 
-    
-    # CSSで中央揃えになるため、シンプルな記述にしています
-    if st.button("ガチャを回す！"):
-        st.session_state.is_registered = False
-        st.session_state.page_state = 'rolling'
-        st.rerun()
+        st.write("") 
+        
+        # ▼▼▼ 枠の横幅いっぱいにボタンを広げる（use_container_width=True） ▼▼▼
+        if st.button("ガチャを回す！", use_container_width=True):
+            st.session_state.is_registered = False
+            st.session_state.page_state = 'rolling'
+            st.rerun()
 
 # ==========================================
 #  画面2: 動画だけの画面 (rolling)
@@ -184,36 +177,43 @@ elif st.session_state.page_state == 'result':
             
             winner_name = st.text_input("お名前（ニックネーム可）", placeholder="例：山田 太郎")
             
-            if st.button("登録する"):
-                if winner_name:
-                    new_record = pd.DataFrame([{
-                        "日時": datetime.datetime.now().strftime("%m/%d %H:%M"),
-                        "お名前": winner_name,
-                        "景品名": row['name'],
-                        "等級": rank,
-                        "使用済み": False,
-                        "使用日時": ""  
-                    }])
-                    updated_winners = pd.concat([df_winners, new_record], ignore_index=True)
-                    try:
-                        conn.update(worksheet="winners", data=updated_winners)
-                        st.session_state.is_registered = True 
-                        st.rerun() 
-                    except Exception as e:
-                        st.error(f"保存エラー: {e}")
-                else:
-                    st.warning("お名前を入力してください！")
+            # 登録ボタンも真ん中に
+            col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
+            with col_btn2:
+                if st.button("登録する", use_container_width=True):
+                    if winner_name:
+                        new_record = pd.DataFrame([{
+                            "日時": datetime.datetime.now().strftime("%m/%d %H:%M"),
+                            "お名前": winner_name,
+                            "景品名": row['name'],
+                            "等級": rank,
+                            "使用済み": False,
+                            "使用日時": ""  
+                        }])
+                        updated_winners = pd.concat([df_winners, new_record], ignore_index=True)
+                        try:
+                            conn.update(worksheet="winners", data=updated_winners)
+                            st.session_state.is_registered = True 
+                            st.rerun() 
+                        except Exception as e:
+                            st.error(f"保存エラー: {e}")
+                    else:
+                        st.warning("お名前を入力してください！")
         else:
             st.success("✅ 登録が完了しました！この画面をスタッフにお見せください。")
             st.write("")
-            if st.button("最初に戻る"):
-                st.session_state.page_state = 'start'
-                st.rerun()
+            col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
+            with col_btn2:
+                if st.button("最初に戻る", use_container_width=True):
+                    st.session_state.page_state = 'start'
+                    st.rerun()
     else:
         st.write("")
-        if st.button("もう一度回す"):
-            st.session_state.page_state = 'start'
-            st.rerun()
+        col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
+        with col_btn2:
+            if st.button("もう一度回す", use_container_width=True):
+                st.session_state.page_state = 'start'
+                st.rerun()
 
 # --- 管理者用 ---
 st.write("")
