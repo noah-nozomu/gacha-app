@@ -7,7 +7,7 @@ from streamlit_gsheets import GSheetsConnection
 # --- ページ設定 ---
 st.set_page_config(page_title="スペシャルガチャ", page_icon="🎁", layout="centered")
 
-# --- CSSでデザイン修正（省略なし） ---
+# --- CSSでデザイン修正（スマホ対応強化版） ---
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(to bottom, #f3f4f6, #e5e7eb); }
@@ -25,11 +25,19 @@ st.markdown("""
         font-family: sans-serif;
         font-weight: 800;
         margin-bottom: 0.5rem;
+        line-height: 1.3; /* スマホで改行した時に詰まりすぎないように調整 */
     }
     p, div { color: #374151; font-family: sans-serif; }
     img { border-radius: 10px; max-height: 300px; object-fit: contain; }
+    
+    /* ボタン全体をスマホの中央にピシッと揃える魔法のコード */
+    div.stButton {
+        display: flex;
+        justify-content: center;
+    }
     .stButton > button {
-        width: 100%;
+        width: 80%; /* 横幅いっぱいに広がりすぎないように80%に調整 */
+        max-width: 300px;
         background-color: #ef4444;
         color: white;
         font-weight: bold;
@@ -91,7 +99,8 @@ if 'is_registered' not in st.session_state:
 #  画面1: スタート画面
 # ==========================================
 if st.session_state.page_state == 'start':
-    st.title("🎁 スペシャルガチャ 🎁")
+    # タイトルを2行に変更し、中央揃えにしました
+    st.markdown("<h1>🎁 Laf2周年<br>スペシャルガチャ 🎁</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; margin-bottom: 20px;'>何が出るかな？運試し！</p>", unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -101,12 +110,13 @@ if st.session_state.page_state == 'start':
         except:
              st.info("gacha_body.jpg がありません")
 
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("ガチャを回す！"):
-            st.session_state.is_registered = False
-            st.session_state.page_state = 'rolling'
-            st.rerun()
+    st.write("") # ボタンの上に少し余白をあける
+    
+    # CSSで中央揃えされるようになったので、シンプルなコードにしました
+    if st.button("ガチャを回す！"):
+        st.session_state.is_registered = False
+        st.session_state.page_state = 'rolling'
+        st.rerun()
 
 
 # ==========================================
@@ -211,19 +221,15 @@ elif st.session_state.page_state == 'result':
         else:
             st.success("✅ 登録が完了しました！この画面をスタッフにお見せください。")
             st.write("")
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                if st.button("最初に戻る"):
-                    st.session_state.page_state = 'start'
-                    st.rerun()
+            if st.button("最初に戻る"):
+                st.session_state.page_state = 'start'
+                st.rerun()
 
     else:
         st.write("")
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button("もう一度回す"):
-                st.session_state.page_state = 'start'
-                st.rerun()
+        if st.button("もう一度回す"):
+            st.session_state.page_state = 'start'
+            st.rerun()
 
 # --- 管理者用 ---
 st.write("")
