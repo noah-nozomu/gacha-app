@@ -9,10 +9,8 @@
 
 | | URL |
 |---|---|
-| デモ | https://laf-gacha.vercel.app/demo/ |
 | 本番 | https://laf-gacha.vercel.app |
 
-> ※ デモURLでは在庫の変動・当選履歴の保存は行われません。自由にお試しください。
 
 ---
 
@@ -49,6 +47,10 @@
 <!-- スクリーンショットをここに追加 -->
 ![トップ画面](https://github.com/user-attachments/assets/77993386-8894-4203-8723-ade1a4ed0323)
 ![ガチャ結果画面](https://github.com/user-attachments/assets/1184f5e5-f848-4df5-97e3-2f06d7b37d84)
+
+
+https://github.com/user-attachments/assets/a07fc9d2-f0a4-425f-bd60-a8be200bc216
+
 
 ---
 
