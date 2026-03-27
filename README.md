@@ -47,6 +47,8 @@
 ## 📸 スクリーンショット
 
 <!-- スクリーンショットをここに追加 -->
+![トップ画面](https://github.com/user-attachments/assets/77993386-8894-4203-8723-ade1a4ed0323)
+![ガチャ結果画面](https://github.com/user-attachments/assets/1184f5e5-f848-4df5-97e3-2f06d7b37d84)
 
 ---
 
